@@ -81,10 +81,12 @@ uint32_t get_CF(void) {
 		return (lf_var1d >> (32 - lf_var2b)) & 1;
 	case t_RCRb:
 	case t_SHRb:
-		return (lf_var1b >> (lf_var2b - 1)) & 1;
+		if (lf_var2b>8) return false;
+		else return (lf_var1b >> (lf_var2b - 1)) & 1;
 	case t_RCRw:
 	case t_SHRw:
-		return (lf_var1w >> (lf_var2b - 1)) & 1;
+		if (lf_var2b>16) return false;
+		else return (lf_var1w >> (lf_var2b - 1)) & 1;
 	case t_RCRd:
 	case t_SHRd:
 	case t_DSHRw:	/* Hmm this is not correct for shift higher than 16 */
@@ -752,7 +754,8 @@ Bitu FillFlags(void) {
 
 
 	case t_SHRb:
-		SET_FLAG(CF,(lf_var1b >> (lf_var2b - 1)) & 1);
+		if (lf_var2b>8) SET_FLAG(CF,false);
+		else SET_FLAG(CF,(lf_var1b >> (lf_var2b - 1)) & 1);
 		DOFLAG_ZFb;
 		DOFLAG_SFb;
 		if ((lf_var2b&0x1f)==1) SET_FLAG(OF,(lf_var1b >= 0x80));
@@ -761,7 +764,8 @@ Bitu FillFlags(void) {
 		SET_FLAG(AF,(lf_var2b&0x1f));
 		break;
 	case t_SHRw:
-		SET_FLAG(CF,(lf_var1w >> (lf_var2b - 1)) & 1);
+		if (lf_var2b>16) SET_FLAG(CF,false);
+		else SET_FLAG(CF,(lf_var1w >> (lf_var2b - 1)) & 1);
 		DOFLAG_ZFw;
 		DOFLAG_SFw;
 		if ((lf_var2w&0x1f)==1) SET_FLAG(OF,(lf_var1w >= 0x8000));
